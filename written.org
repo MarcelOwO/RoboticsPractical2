@@ -1,0 +1,60 @@
+#+title: Written
+
+
+** Part 1:
+*** A1: Read the Indices - Transforms:
+a. IrIE = IrIB + BrBE | False => C IB BrBE
+b. T_{IK} = T_{IE} T_{EK}
+c.
+
+*** A2: Homogeneous Transformations:
+**** a:
+
+C_{AB} = C_{x} = (90\deg) and ArAB = $\begin{pmatrix} 0 \\ 1 \\2 \end{pmatrix}$ m
+ T_{AB} = $\begin{pmatrix} C AB \ ArAB \\ 0 \ 1 \end{pmatrix} = \begin{pmatrix} 1 \ 0 \ 0 \ 0 \\ 0 \ 0 \ -1 \ 1 \\ 0 \ 1 \ 0 \ 2 \\ 0\ 0 \ 0 \ 1 \end{pmatrix}$
+
+ BrBP = $\begin{pmatrix} 0 \\ 1 \\ 0 \end{pmatrix}$
+
+
+**** b:
+
+T_{BA} = $\begin{pmatrix} C_{AB}^{T} \ -C_{AB ArAB} \\ 0 \ 1 \end{pmatrix} = \begin{pmatrix} 1 \ 0 \ 0 \ 0 \\ 0 \ 0 \ 1 \ -2 \\ 0 \ -1 \ 0 \ -1 \\ 0 \ 0 \ 0 \ 1 \end{pmatrix}$
+
+T_{AC}  = $\begin{pmatrix}
+1 \ 0 \ 0 \ 0 \\
+0 \ 0 \ 1 \ -2 \\
+0 \ -1 \ 0 \ -1 \\
+0 \ 0 \ 0 \ 1
+\end{pmatrix} * \begin{pmatrix}
+1 \ 0 \ 0 \ 0 \\
+0 \ 1 \ 0 \ 0 \\
+0 \ 0 \ 1 \ 1 \\
+0 \ 0 \ 0 \ 1
+\end{pmatrix}
+= \begin{pmatrix}
+1 \ 0 \ 0 \ 0 \\
+0 \ 0 \ -1 \ 2 \\
+0 \ 1 \ 0 \ 2 \\
+0 \ 0 \ 0 \ 1
+\end{pmatrix}$
+
+**** A3: Building a Post Joint by Joint
+T_{IE} = Rot_{z}(q_{1})Trans(l_{1}e_{x})Rot_{z}(q_{2})Trans(l_{2}e_{x})
+
+
+Rot_{z} = $\begin{pmatrix}0 \ -1 \ 0 \ 0 \\ 1 \ 0 \ 0 \ 0 \\ 0 \ 0 \ 1 \ 0 \\ 0 \ 0 \ 0 \ 1 \end{pmatrix} * \begin{pmatrix} 1 \ 0 \ 0 \ 0 \\ 0 \ 1 \ 0 \ 0 \\ 0 \ 0 \ 1 \ 0 \\ 0 \ 0 \ 0 \ 1 \end{pmatrix} * \begin{pmatrix} 0 \ 1 \ 0 \ 0 \\ -1 \ 0 \ 0 \ 0 \\ 0 \ 0 \ 1 \ 0 \\ 0 \ 0 \ 0 \ 1 \end{pmatrix} * \begin{pmatrix} 1 \ 0 \ 0 \ 0.5 \\ 0 \ 1 \ 0 \ 0 \\ 0 \ 0 \ 1 \ 0 \\ 0 \ 0 \ 0 \ 1\end{pmatrix} = ... = \begin{pmatrix} 1 \ 0 \ 0 \ 0.5 \\ 0 \ 0 \ 1 \ 0.5 \\ 0 \ 0 \ 1 \ 0 \\ 0 \ 0 \ 0 \ 1 \end{pmatrix}$
+
+
+
+** Part 2:
+
+*** A4: Angular Velocity and teh Euler-Rate Matrix
+A \omega AC_{}  = A \omega AB + A \omage BC
+
+        = A \omage AB * C AB  B \omage BC
+
+** Part 3:
+
+** Part 4:
+
+** Part 5:

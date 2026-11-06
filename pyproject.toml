@@ -1,0 +1,23 @@
+[project]
+name = "im560-sheet-02"
+version = "2026.1"
+description = "IM 560, Lecture 03: transformations and velocities of the Franka Panda"
+requires-python = ">=3.11,<3.14"
+dependencies = [
+    "numpy>=2.0",
+    "matplotlib>=3.8",
+    "jax>=0.4.30",
+    "mujoco>=3.3",
+    "frax>=0.1.0",
+    "viser>=1.0",
+    "robot_descriptions>=1.12",
+    "pytest>=8",
+]
+
+[tool.uv]
+package = false
+
+[tool.pytest.ini_options]
+testpaths = ["tests"]
+addopts = "--ignore=tests/test_bonus.py"
+filterwarnings = ["ignore::UserWarning"]
