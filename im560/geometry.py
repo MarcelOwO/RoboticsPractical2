@@ -8,6 +8,7 @@ Conventions (see the notation reference):
 
 All functions take and return JAX arrays of float64.
 """
+
 import jax
 import jax.numpy as jnp
 
@@ -19,9 +20,7 @@ EPS = 1e-9
 # ---------------------------------------------------------------------------
 def skew(a):
     """[a]_x, the matrix with skew(a) @ b == jnp.cross(a, b)."""
-    return jnp.array([[0.0, -a[2], a[1]],
-                     [a[2], 0.0, -a[0]],
-                     [-a[1], a[0], 0.0]])
+    return jnp.array([[0.0, -a[2], a[1]], [a[2], 0.0, -a[0]], [-a[1], a[0], 0.0]])
 
 
 def vee(S):
@@ -62,7 +61,9 @@ def is_rotation(C, tol=1e-9):
     C = jnp.asarray(C, dtype=float)
     if C.shape != (3, 3):
         return jnp.asarray(False)
-    return jnp.allclose(C.T @ C, jnp.eye(3), atol=tol, rtol=0) & (jnp.abs(jnp.linalg.det(C)-1) < tol)
+    return jnp.allclose(C.T @ C, jnp.eye(3), atol=tol, rtol=0) & (
+        jnp.abs(jnp.linalg.det(C) - 1) < tol
+    )
 
 
 # ---------------------------------------------------------------------------
@@ -74,10 +75,10 @@ def exp_so3(phi):
     t2 = phi @ phi
     small = t2 < 1e-8
     t = jnp.sqrt(jnp.where(small, 1.0, t2))
-    a = jnp.where(small, 1-t2/6+t2*t2/120, jnp.sin(t)/t)
-    b = jnp.where(small, .5-t2/24+t2*t2/720, (1-jnp.cos(t))/(t*t))
+    a = jnp.where(small, 1 - t2 / 6 + t2 * t2 / 120, jnp.sin(t) / t)
+    b = jnp.where(small, 0.5 - t2 / 24 + t2 * t2 / 720, (1 - jnp.cos(t)) / (t * t))
     K = skew(phi)
-    return jnp.eye(3) + a*K + b*(K @ K)
+    return jnp.eye(3) + a * K + b * (K @ K)
 
 
 def log_so3(C):
@@ -87,22 +88,26 @@ def log_so3(C):
     Safe denominators also keep inactive branches finite under vmap.
     """
     C = jnp.asarray(C, dtype=float)
-    w = .5 * vee(C-C.T)
+    w = 0.5 * vee(C - C.T)
     s2 = w @ w
-    c = (jnp.trace(C)-1)/2
+    c = (jnp.trace(C) - 1) / 2
     s = jnp.sqrt(jnp.maximum(s2, 1e-30))
     theta = jnp.arctan2(s, c)
+
     def near_pi(_):
-        B = (C+C.T+2*jnp.eye(3))/4
+        B = (C + C.T + 2 * jnp.eye(3)) / 4
         k = jnp.argmax(jnp.diag(B))
         n = B[:, k] / jnp.sqrt(jnp.maximum(B[k, k], 1e-30))
         n = n / jnp.maximum(jnp.linalg.norm(n), 1e-15)
         n = jnp.where(n @ w < 0, -n, n)
-        return theta*n
+        return theta * n
+
     def regular(_):
-        return jnp.where((s2 < 1e-12) & (c > 0),
-                         (1+s2/6+3*s2*s2/40)*w, (theta/s)*w)
-    return jax.lax.cond(c < -1+1e-8, near_pi, regular, operand=None)
+        return jnp.where(
+            (s2 < 1e-12) & (c > 0), (1 + s2 / 6 + 3 * s2 * s2 / 40) * w, (theta / s) * w
+        )
+
+    return jax.lax.cond(c < -1 + 1e-8, near_pi, regular, operand=None)
 
 
 # ---------------------------------------------------------------------------
@@ -126,9 +131,9 @@ def quat_from_phi(phi):
     t2 = phi @ phi
     small = t2 < 1e-8
     t = jnp.sqrt(jnp.where(small, 1.0, t2))
-    real = jnp.where(small, 1-t2/8+t2*t2/384, jnp.cos(t/2))
-    scale = jnp.where(small, .5-t2/48+t2*t2/3840, jnp.sin(t/2)/t)
-    return jnp.concatenate((real[None], scale*phi))
+    real = jnp.where(small, 1 - t2 / 8 + t2 * t2 / 384, jnp.cos(t / 2))
+    scale = jnp.where(small, 0.5 - t2 / 48 + t2 * t2 / 3840, jnp.sin(t / 2) / t)
+    return jnp.concatenate((real[None], scale * phi))
 
 
 def C_from_quat(q):
@@ -147,22 +152,37 @@ def quat_from_C(C):
 # ---------------------------------------------------------------------------
 def T_from(C_AB, A_r_AB):
     """T_AB from the rotation C_AB and the position A_r_AB of the origin of B."""
-    raise NotImplementedError("see the docstring and the assignment text")
+    T = jnp.eye(4)
+    T = T.at[:3, :3].set(C_AB)
+    T = T.at[:3, 3].set(A_r_AB)
+    return T
 
 
 def T_inv(T_AB):
     """T_BA, computed with C^T and -C^T r (no general matrix inverse)."""
-    raise NotImplementedError("see the docstring and the assignment text")
+    C_AB = T_AB[:3, :3]
+    A_r_AB = T_AB[:3, 3]
+    C_BA = C_AB.T
+    B_r_BA = -C_BA @ A_r_AB
+    return T_from(C_BA, B_r_BA)
 
 
 def apply_point(T_AB, B_r_BP):
     """A_r_AP from B_r_BP (homogeneous coordinate 1)."""
-    raise NotImplementedError("see the docstring and the assignment text")
+
+    B_r_BP = jnp.asarray(B_r_BP)
+
+    p = jnp.append(B_r_BP, 1.0)
+    p = T_AB @ p
+    return p[:3]
 
 
 def apply_direction(T_AB, B_u):
     """A_u from B_u (homogeneous coordinate 0: only the rotation acts)."""
-    raise NotImplementedError("see the docstring and the assignment text")
+    B_u = jnp.asarray(B_u)
+    u = jnp.append(B_u, 0.0)
+    u = T_AB @ u
+    return u[:3]
 
 
 # ---------------------------------------------------------------------------

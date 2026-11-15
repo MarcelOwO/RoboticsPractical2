@@ -21,3 +21,6 @@ package = false
 testpaths = ["tests"]
 addopts = "--ignore=tests/test_bonus.py"
 filterwarnings = ["ignore::UserWarning"]
+
+[tool.hatch.build.targets.wheel]
+packages= ["im560"]
